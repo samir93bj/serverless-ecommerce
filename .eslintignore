@@ -1,0 +1,9 @@
+.husky
+.vscode
+coverage
+dist
+documentation
+node_modules
+public
+.eslintrc.json
+cdk.out

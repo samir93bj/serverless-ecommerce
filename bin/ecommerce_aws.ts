@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { ProductAppStack } from '../lib/productsApp-stack';
 import { EcommerceApiStack } from '../lib/ecommerceApi-stack';
@@ -26,5 +24,6 @@ const eCommerceApiStack = new EcommerceApiStack(app, 'EcommerceApi', {
 	tags: tags,
 	env: env
 });
+
 
 eCommerceApiStack.addDependency(productsAppStack);

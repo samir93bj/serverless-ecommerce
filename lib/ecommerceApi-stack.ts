@@ -5,56 +5,53 @@ import * as cwlogs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 
 interface ECommerceApiStackProps extends cdk.StackProps {
-	productsFetchHandler: lambdaNodeJS.NodejsFunction
-	productsAdminhHandler: lambdaNodeJS.NodejsFunction
+  productsFetchHandler: lambdaNodeJS.NodejsFunction
+  productsAdminhHandler: lambdaNodeJS.NodejsFunction
 }
 
 export class EcommerceApiStack extends cdk.Stack {
+  constructor (scope: Construct, id: string, props: ECommerceApiStackProps) {
+    super(scope, id, props);
 
-	constructor(scope: Construct, id: string, props: ECommerceApiStackProps ) {
-		super(scope, id, props);
+    const logGroup = new cwlogs.LogGroup(this, 'ECommerceApiLogs');
+    const api = new apigateway.RestApi(this, 'ECommerceApi', {
+      restApiName: 'ECommerceApi',
+      cloudWatchRole: true,
+      deployOptions: {
+        accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+        accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+          httpMethod: true,
+          ip: false,
+          protocol: true,
+          requestTime: true,
+          resourcePath: true,
+          responseLength: true,
+          status: true,
+          caller: true,
+          user: false
+        })
+      }
+    });
 
-		const logGroup = new cwlogs.LogGroup(this, 'ECommerceApiLogs');
+    const productResource = api.root.addResource('products');
+    const productIdResource = productResource.addResource('{id}');
+    const productsFetchIntegration = new apigateway.LambdaIntegration(props.productsFetchHandler);
+    const productsAdminIntegration = new apigateway.LambdaIntegration(props.productsAdminhHandler);
 
-		const api = new apigateway.RestApi(this, 'ECommerceApi', {
-			restApiName: 'ECommerceApi',
-			cloudWatchRole: true,
-			deployOptions: {
-				accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
-				accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
-					httpMethod: true,
-					ip: false,
-					protocol: true,
-					requestTime: true,
-					resourcePath: true,
-					responseLength: true,
-					status: true,
-					caller: true,
-					user: false
-				})
-			}
-		});
+    /* GET '/products' */
+    productResource.addMethod('GET', productsFetchIntegration);
 
-		const productResource = api.root.addResource("products");
-		const productIdResource = productResource.addResource('{id}')
-		const productsFetchIntegration = new apigateway.LambdaIntegration(props.productsFetchHandler)
-		const productsAdminIntegration = new apigateway.LambdaIntegration(props.productsAdminhHandler)
+    /* GET  /products/{id} */
 
-		//GET '/products'
-		productResource.addMethod('GET', productsFetchIntegration)
+    productIdResource.addMethod('GET', productsFetchIntegration);
 
-		//GET  /products/{id}
+    /* POST /products */
+    productResource.addMethod('POST', productsAdminIntegration);
 
-		productIdResource.addMethod('GET', productsFetchIntegration)
+    /* PUT /products/{id} */
+    productIdResource.addMethod('PUT', productsAdminIntegration);
 
-		//POST /products
-		productResource.addMethod('POST', productsAdminIntegration )
-
-		//PUT /products/{id}
-		productIdResource.addMethod('PUT', productsAdminIntegration )
-
-		//DELETE /products/{id}
-		productIdResource.addMethod('DELETE', productsAdminIntegration )
-	}
-
+    /* DELETE /products/{id} */
+    productIdResource.addMethod('DELETE', productsAdminIntegration);
+  }
 };

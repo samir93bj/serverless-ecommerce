@@ -17,13 +17,13 @@ const tags = {
 const productsAppStack = new ProductAppStack(app, 'ProductsApp', {
   tags: tags,
   env: env
-})
+});
 
 const eCommerceApiStack = new EcommerceApiStack(app, 'EcommerceApi', {
   productsFetchHandler: productsAppStack.productsFetchHandler,
   productsAdminhHandler: productsAppStack.productsAdminHandler,
   tags: tags,
   env: env
-})
+});
 
-eCommerceApiStack.addDependency(productsAppStack)
+eCommerceApiStack.addDependency(productsAppStack);

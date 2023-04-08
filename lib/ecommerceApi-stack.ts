@@ -42,7 +42,6 @@ export class EcommerceApiStack extends cdk.Stack {
     productResource.addMethod('GET', productsFetchIntegration);
 
     /* GET  /products/{id} */
-
     productIdResource.addMethod('GET', productsFetchIntegration);
 
     /* POST /products */

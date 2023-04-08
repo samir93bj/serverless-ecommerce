@@ -59,7 +59,7 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
         return {
           statusCode: 404,
           body: JSON.stringify({
-            message: 'Product not found'
+            message: 'Product not found.'
           })
         };
       }

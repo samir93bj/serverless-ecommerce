@@ -58,10 +58,12 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
         })
       };
     } catch (err) {
+      console.error((<Error>err).message);
+
       return {
-        statusCode: 400,
+        statusCode: 404,
         body: JSON.stringify({
-          message: 'Bad request.'
+          message: (<Error>err).message
         })
       };
     }

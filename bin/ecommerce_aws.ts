@@ -16,13 +16,13 @@ const tags = {
 };
 
 const productsAppLayersStack = new ProductsAppLayersStack(app, 'ProductsAppLayers', {
-  tags: tags,
-  env: env
+  tags,
+  env
 });
 
 const productsAppStack = new ProductAppStack(app, 'ProductsApp', {
-  tags: tags,
-  env: env
+  tags,
+  env
 });
 
 productsAppStack.addDependency(productsAppLayersStack);
@@ -30,8 +30,8 @@ productsAppStack.addDependency(productsAppLayersStack);
 const eCommerceApiStack = new EcommerceApiStack(app, 'EcommerceApi', {
   productsFetchHandler: productsAppStack.productsFetchHandler,
   productsAdminhHandler: productsAppStack.productsAdminHandler,
-  tags: tags,
-  env: env
+  tags,
+  env
 });
 
 eCommerceApiStack.addDependency(productsAppStack);

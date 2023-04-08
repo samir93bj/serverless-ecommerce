@@ -40,4 +40,15 @@ export class ProductRespository {
 
     return data.Item as Product;
   }
+
+  async create (product: Product): Promise<Product> {
+    product.id = uuid();
+
+    this.ddbClient.put({
+      TableName: this.productsDdb,
+      Item: product
+    }).promise();
+
+    return product;
+  }
 }

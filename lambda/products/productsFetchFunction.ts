@@ -18,32 +18,54 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
   const method = event.httpMethod;
   if (event.resource === '/products') {
     if (method === 'GET') {
-      console.log('GET /products');
+      try {
+        console.log('GET /products');
 
-      const products = await productRepository.getAllProducts();
+        const products = await productRepository.getAllProducts();
 
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          message: 'Success GET Products - Ok',
-          products
-        })
-      };
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: 'Success GET Products - Ok',
+            products
+          })
+        };
+      } catch (err) {
+        console.error((<Error>err).message);
+
+        return {
+          statusCode: 404,
+          body: JSON.stringify({
+            message: (<Error>err).message
+          })
+        };
+      }
     }
   }
 
   if (event.resource === '/products/{id}') {
-    const productId = event.pathParameters!.id as string;
+    try {
+      const productId = event.pathParameters!.id as string;
 
-    console.log(`GET /products/${productId}`);
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: `Success GET /products/${productId}`
-      })
-    };
+      const product = await productRepository.getProductById(productId);
+
+      console.log(`GET /products/${productId}`);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: `Success GET /products/${productId}`,
+          product
+        })
+      };
+    } catch (err) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: 'Bad request.'
+        })
+      };
+    }
   }
-
   return {
     statusCode: 400,
     body: JSON.stringify({

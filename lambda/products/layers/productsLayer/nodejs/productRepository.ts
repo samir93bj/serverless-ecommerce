@@ -9,7 +9,7 @@ export interface Product {
   model: string;
 }
 
-export class ProductRespository {
+export class ProductRepository {
   private ddbClient: DocumentClient;
   private productsDdb: string;
 

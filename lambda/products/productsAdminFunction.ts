@@ -1,3 +1,4 @@
+/* eslint-disable import/no-absolute-path */
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { Product, ProductRepository } from '/opt/nodejs/productsLayer';
 import { DynamoDB } from 'aws-sdk';
@@ -39,21 +40,26 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
     }
   } else if (event.resource === '/products/{id}') {
     const productId = event.pathParameters!.id as string;
+
     if (event.httpMethod === 'PUT') {
       try {
+        const product = JSON.parse(event.body!) as Product;
+        const productUpdated = await productRepository.updateProduct(productId, product);
+
         return {
           statusCode: 200,
           body: JSON.stringify({
-            message: `[Admin] Success PUT Product - ${productId}`
+            message: `[Admin] Success update Product - ${productId}`,
+            productUpdated
           })
         };
-      } catch (err) {
-        console.error((<Error>err).message);
+      } catch (ConditionaCheckFailedException) {
+        console.error(ConditionaCheckFailedException);
 
         return {
           statusCode: 404,
           body: JSON.stringify({
-            message: (<Error>err).message
+            message: 'Product not found'
           })
         };
       }

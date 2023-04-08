@@ -19,7 +19,8 @@
     "no-non-null-assertion":"off",
     "@typescript-eslint/no-useless-constructor": "off",
     "no-useless-constructor":"off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "no-unreachable": "off"
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

@@ -2,6 +2,9 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda
 // eslint-disable-next-line import/no-absolute-path
 import { ProductRepository } from '/opt/nodejs/productsLayer';
 import { DynamoDB } from 'aws-sdk';
+import * as AWSXRay from 'aws-xray-sdk';
+
+AWSXRay.captureAWS(require('aws-sdk'));
 
 const productDdb = process.env.PRODUCTS_DDB!;
 const ddbClient = new DynamoDB.DocumentClient();

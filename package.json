@@ -5,6 +5,7 @@
     "ecommerce_aws": "bin/ecommerce_aws.js"
   },
   "scripts": {
+    "deploy": "cdk deploy --all --require-approval never",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",

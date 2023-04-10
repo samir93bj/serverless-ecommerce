@@ -30,8 +30,8 @@ export class ProductsAppLayersStack extends cdk.Stack {
     });
 
     // eslint-disable-next-line no-new
-    new ssm.StringParameter(this, 'ProductsEventsLayersArn', {
-      parameterName: 'ProductsEventsLayersArn',
+    new ssm.StringParameter(this, 'ProductEventsLayerVersionArn', {
+      parameterName: 'ProductEventsLayerVersionArn',
       stringValue: productsEventsLayers.layerVersionArn
     });
   }

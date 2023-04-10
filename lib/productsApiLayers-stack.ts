@@ -9,7 +9,7 @@ export class ProductsAppLayersStack extends cdk.Stack {
   constructor (scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    this.productsLayers = new lambda.LayerVersion(this, 'ProductsLayer', {
+    const productsLayers = new lambda.LayerVersion(this, 'ProductsLayer', {
       code: lambda.Code.fromAsset('lambda/products/layers/productsLayer'),
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
       layerVersionName: 'ProductsLayer',
@@ -19,7 +19,20 @@ export class ProductsAppLayersStack extends cdk.Stack {
     // eslint-disable-next-line no-new
     new ssm.StringParameter(this, 'ProductsLayersVersionArn', {
       parameterName: 'ProductsLayersVersionArn',
-      stringValue: this.productsLayers.layerVersionArn
+      stringValue: productsLayers.layerVersionArn
+    });
+
+    const productsEventsLayers = new lambda.LayerVersion(this, 'ProductEventsLayer', {
+      code: lambda.Code.fromAsset('lambda/products/layers/productEventsLayer'),
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
+      layerVersionName: 'ProductEventsLayer',
+      removalPolicy: cdk.RemovalPolicy.RETAIN
+    });
+
+    // eslint-disable-next-line no-new
+    new ssm.StringParameter(this, 'ProductsEventsLayersArn', {
+      parameterName: 'ProductsEventsLayersArn',
+      stringValue: productsEventsLayers.layerVersionArn
     });
   }
 }

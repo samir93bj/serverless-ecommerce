@@ -23,7 +23,7 @@ export class ProductsAppLayersStack extends cdk.Stack {
     });
 
     const productsEventsLayers = new lambda.LayerVersion(this, 'ProductEventsLayer', {
-      code: lambda.Code.fromAsset('lambda/products/layers/productEventsLayer'),
+      code: lambda.Code.fromAsset('lambda/products/layers/productsEventsLayer'),
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
       layerVersionName: 'ProductEventsLayer',
       removalPolicy: cdk.RemovalPolicy.RETAIN

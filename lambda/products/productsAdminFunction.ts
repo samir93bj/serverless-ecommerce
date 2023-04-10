@@ -56,6 +56,9 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
         const product = JSON.parse(event.body!) as Product;
         const productUpdated = await productRepository.updateProduct(productId, product);
 
+        const response = await sendProductEvent(productUpdated, ProductEventType.UPDATED, 'testUpdate@test.com', lambdaRequestId);
+        console.log(response);
+
         return {
           statusCode: 200,
           body: JSON.stringify({
@@ -75,13 +78,15 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
       }
     } else if (event.httpMethod === 'DELETE') {
       try {
-        const product = await productRepository.deleteProduct(productId);
+        const productDeleted = await productRepository.deleteProduct(productId);
+        const response = await sendProductEvent(productDeleted, ProductEventType.UPDATED, 'testDeleted@test.com', lambdaRequestId);
+        console.log(response);
 
         return {
           statusCode: 200,
           body: JSON.stringify({
             message: `[Admin] Success delete Product - ${productId}`,
-            product
+            productDeleted
           })
         };
       } catch (err) {

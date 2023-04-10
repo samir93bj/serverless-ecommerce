@@ -79,7 +79,7 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
     } else if (event.httpMethod === 'DELETE') {
       try {
         const productDeleted = await productRepository.deleteProduct(productId);
-        const response = await sendProductEvent(productDeleted, ProductEventType.UPDATED, 'testDeleted@test.com', lambdaRequestId);
+        const response = await sendProductEvent(productDeleted, ProductEventType.DELETED, 'testDeleted@test.com', lambdaRequestId);
         console.log(response);
 
         return {

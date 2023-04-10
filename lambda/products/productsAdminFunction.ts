@@ -1,13 +1,17 @@
 /* eslint-disable import/no-absolute-path */
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { Product, ProductRepository } from '/opt/nodejs/productsLayer';
-import { DynamoDB } from 'aws-sdk';
+import { ProductEvent, ProductEventType } from '/opt/nodejs/productsEventsLayer';
+import { DynamoDB, Lambda } from 'aws-sdk';
 import * as AWSXRay from 'aws-xray-sdk';
 
 AWSXRay.captureAWS(require('aws-sdk'));
 
 const productDdb = process.env.PRODUCTS_DDB!;
+const productEventFunctionName = process.env.PRODUCTS_VENTS_FUNCTION_NAME!;
+
 const ddbClient = new DynamoDB.DocumentClient();
+const lambdaClient = new Lambda();
 
 const productRepository = new ProductRepository(ddbClient, productDdb);
 
@@ -23,6 +27,9 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
 
       const product = JSON.parse(event.body!) as Product;
       const productCreated = await productRepository.create(product);
+
+      const response = await sendProductEvent(productCreated, ProductEventType.CREATED, 'test@test.com', lambdaRequestId);
+      console.log(response);
 
       return {
         statusCode: 201,
@@ -97,3 +104,20 @@ export async function handler (event: APIGatewayProxyEvent, context: Context): P
     })
   };
 }
+
+async function sendProductEvent (product: Product, eventType: ProductEventType, email: string, lambdaRequestId: string) {
+  const event: ProductEvent = {
+    email,
+    eventType,
+    productCode: product.code,
+    productId: product.id,
+    productPrice: product.price,
+    requestId: lambdaRequestId
+  };
+
+  lambdaClient.invoke({
+    FunctionName: productEventFunctionName,
+    Payload: JSON.stringify(event),
+    InvocationType: 'RequestResponse'
+  }).promise();
+};

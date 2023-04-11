@@ -123,6 +123,7 @@ async function sendProductEvent (product: Product, eventType: ProductEventType, 
   lambdaClient.invoke({
     FunctionName: productEventFunctionName,
     Payload: JSON.stringify(event),
-    InvocationType: 'RequestResponse'
+    InvocationType: 'Event'
+    /* InvocationType: 'RequestResponse' */
   }).promise();
 };

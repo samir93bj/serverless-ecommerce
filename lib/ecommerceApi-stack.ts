@@ -33,6 +33,11 @@ export class EcommerceApiStack extends cdk.Stack {
       }
     });
 
+    this.createProductsService(api, props);
+  }
+
+  /* Create API Gateway */
+  private createProductsService (api: apigateway.RestApi, props: ECommerceApiStackProps) {
     const productResource = api.root.addResource('products');
     const productIdResource = productResource.addResource('{id}');
     const productsFetchIntegration = new apigateway.LambdaIntegration(props.productsFetchHandler);

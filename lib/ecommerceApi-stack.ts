@@ -70,6 +70,19 @@ export class EcommerceApiStack extends cdk.Stack {
 
     orderResource.addMethod('POST', orderIntegration);
 
-    orderResource.addMethod('DELETE', orderIntegration);
+    /* DELETE /orders?email=matilde@siecola.com.br&orderId=123 */
+    const orderDeleteValidaor = new apigateway.RequestValidator(this, 'OrderDeletionValidator', {
+      restApi: api,
+      requestValidatorName: 'OrderDeletionValidator',
+      validateRequestParameters: true
+    });
+
+    orderResource.addMethod('DELETE', orderIntegration, {
+      requestParameters: {
+        'method.request.querystring.email': true,
+        'method.request.querystring.orderId': true
+      },
+      requestValidator: orderDeleteValidaor
+    });
   }
 };

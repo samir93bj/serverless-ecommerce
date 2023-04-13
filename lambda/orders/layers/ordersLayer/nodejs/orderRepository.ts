@@ -60,4 +60,18 @@ export class OrderRepository {
 
     return data.Items as Order[];
   }
+
+  async getOrder (email: string, orderId: string): Promise<Order> {
+    const data = await this.ddbClient.get({
+      TableName: this.ordersDdb,
+      Key: {
+        pk: email,
+        sk: orderId
+      }
+    }).promise();
+
+    if (!data.Item) throw new Error('Order not found');
+
+    return data.Item as Order;
+  }
 }

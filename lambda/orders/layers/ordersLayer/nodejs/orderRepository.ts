@@ -1,3 +1,5 @@
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { v4 as uuid } from 'uuid';
 export interface OrderProduct {
   code: string,
   price: number
@@ -16,4 +18,26 @@ export interface Order {
     totalPrice: number
   },
   products: OrderProduct[]
+}
+
+export class OrderRepository {
+  private ddbClient: DocumentClient;
+  private ordersDdb: string;
+
+  constructor (ddbClient: DocumentClient, ordersDdb: string) {
+    this.ddbClient = ddbClient;
+    this.ordersDdb = ordersDdb;
+  }
+
+  async createOrder (order: Order) {
+    order.sk = uuid();
+    order.createdAt = Date.now();
+
+    const orderCreated = await this.ddbClient.put({
+      TableName: this.ordersDdb,
+      Item: order
+    }).promise();
+
+    return orderCreated;
+  }
 }
